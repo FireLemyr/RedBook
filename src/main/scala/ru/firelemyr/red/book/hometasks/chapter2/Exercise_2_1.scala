@@ -1,4 +1,4 @@
-package ru.firelemyr.red.book.hometasks
+package ru.firelemyr.red.book.hometasks.chapter2
 
 import scala.util.Try
 

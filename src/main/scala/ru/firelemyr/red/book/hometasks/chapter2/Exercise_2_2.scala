@@ -1,4 +1,4 @@
-package ru.firelemyr.red.book.hometasks
+package ru.firelemyr.red.book.hometasks.chapter2
 
 object Exercise_2_2 {
   def isSorted[A](as: Array[A], ordered: (A, A) => Boolean): Boolean = {
