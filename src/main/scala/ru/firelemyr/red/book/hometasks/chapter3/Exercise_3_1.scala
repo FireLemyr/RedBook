@@ -1,6 +1,7 @@
 package ru.firelemyr.red.book.hometasks.chapter3
 
 object Exercise_3_1 extends CustomList{
+  import List._
 
   val x = List(1,2,3,4,5) match {
     case Cons(x, Cons(2, Cons(4, _))) => x //Возвращает 1й элемент если второй и 3й элементы 2 и 4 соответственно
@@ -71,12 +72,68 @@ object Exercise_3_1 extends CustomList{
       def step(acc: List[A], balance: List[A]): List[A] = {
         balance match {
           case Cons(_, Nil) => acc
-          case Cons(h, t) => step(List.append(acc,Cons(h, Nil)), t)
-          case _=> Nil
+          case Cons(h, t) => step(List.append(acc, Cons(h, Nil)), t)
+          case _ => Nil
         }
-
       }
+
       step(Nil, l)
+    }
+  }
+
+  //3.7 Can product, implemented using foldRight, immediately halt the recursion and
+  //return 0.0 if it encounters a 0.0? Why or why not? Consider how any short-circuiting
+  //might work if you call foldRight with a large list. This is a deeper question that we’ll
+  //return to in chapter 5
+
+  // Не может тк условие выхода из рекурсии - окончание списка.
+
+  //3.9 Compute the length of a list using foldRight
+  def length[T](ns: List[T]): Int =
+    foldRight(ns, 0)( (_, acc) => 1 + acc)
+
+  //3.10 Our implementation of foldRight is not tail-recursive and will result in a StackOverflowError for large lists (we say it’s not stack-safe). Convince yourself that this is the
+  //case, and then write another general list-recursion function, foldLeft, that is tail-recursive, using the techniques we discussed in the previous chapter. Here is its
+  //signature:
+
+  @annotation.tailrec
+  def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B ={
+    as match {
+      case Nil => z
+      case Cons(h, t) => foldLeft(t, f(z, h))(f)
+    }
+  }
+
+  //3.11 Write sum, product, and a function to compute the length of a list using foldLeft
+  def sum3(ns: List[Int]) =
+    foldLeft(ns, 0)((x, y) => x + y)
+
+  def product3(ns: List[Double]) =
+    foldLeft(ns, 1.0)(_ * _)
+
+  def length3[T](ns: List[T]): Int =
+    foldLeft(ns, 0)( (acc, _) => 1 + acc)
+
+  //3.12 Write a function that returns the reverse of a list (given List(1,2,3) it returns
+  //List(3,2,1)). See if you can write it using a fold
+
+  def reverse[T](ns: List[T]): List[T] ={
+    foldLeft(ns, Nil: List[T])( (acc, elem) => Cons(elem, acc))
+  }
+
+  // Hard: Can you write foldLeft in terms of foldRight? How about the other way
+  //around? Implementing foldRight via foldLeft is useful because it lets us implement
+  //foldRight tail-recursively, which means it works even for large lists without overflowing the stack.
+
+  def foldRight2[A, B](as: List[A], z: B)(f: (A, B) => B): B = {
+    val f2 = (x:B, y:A) => f(y, x)
+    foldLeft(reverse(as), z)(f2)
+    }
+
+  def foldRight3[A, B](as: List[A], z: B)(f: (A, B) => B): B = {
+    as match {
+      case Nil => z
+      case Cons(h, t) => foldLeft(t, f(h, _))((func, elem) => (m:B) =>  func(f(elem, m)))(z)
     }
   }
 
@@ -95,6 +152,25 @@ object Exercise_3_1 extends CustomList{
     println(ExpressionForList.dropWhile(list, (x: Int) => x < 0))
     println("3.6")
     println(ExpressionForList.init(list))
+    println("3.8")
+    println(List.foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)))
+    println("3.9")
+    println(length(List(1,2,3)))
+    println(length(List(1)))
+    println(length(Nil))
+    println("3.10")
+    println(foldLeft(List(1,2,3), 4)(_+_))
+    println("3.11")
+    println(sum3(list))
+    println(product3(List(1.0, 2.0, 3.0)))
+    println(length3(list))
+    println("3.12")
+    println(reverse(list))
+    println("3.13")
+    println(foldRight(List("a", "b", "c"), "0")(_+_))
+    println(foldRight2(List("a", "b", "c"), "0")(_+_))
+    println(foldRight3(List("a", "b", "c"), "0")(_+_))
+    println(foldLeft(List("a", "b", "c"), "0")(_+_))
   }
 
 }
