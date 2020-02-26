@@ -1,8 +1,6 @@
 package ru.firelemyr.red.book.hometasks.chapter3
 
-import ru.firelemyr.red.book.hometasks.chapter3.Exercise_3_1.foldRight3
-
-object Exercise_3_1 extends CustomList {
+object Exercise_3_1_22 extends CustomList {
 
   import List._
 
@@ -22,7 +20,7 @@ object Exercise_3_1 extends CustomList {
   //3.2 Implement the function tail for removing the first element of a List. Note that the
   //function takes constant time. What are different choices you could make in your
   //implementation if the List is Nil? We’ll return to this question in the next chapter
-  object ExpressionForList {
+
     def tail[T](ints: List[T]): List[T] = {
       ints match {
         case Cons(_, t) => t
@@ -86,7 +84,7 @@ object Exercise_3_1 extends CustomList {
 
       step(Nil, l)
     }
-  }
+
 
   //3.7 Can product, implemented using foldRight, immediately halt the recursion and
   //return 0.0 if it encounters a 0.0? Why or why not? Consider how any short-circuiting
@@ -199,6 +197,31 @@ object Exercise_3_1 extends CustomList {
     flatMap(as)(x => if(f(x)) List(x) else Nil)
   }
 
+  // 3.22 Write a function that accepts two lists and constructs a new list by
+  // adding corresponding elements. For example, List(1,2,3) and List(4,5,6) become List(5,7,9)
+
+  def head[A](a1:List[A]) = {
+    a1 match {
+      case Cons(h, _) => h
+      case _ => throw new IllegalArgumentException("Nil have not head")
+    }
+  }
+
+  def merge[A, B, C](a1:List[A], a2:List[B])(f: (A, B) => C): List[C] = {
+    if(length3(a1) == length3(a2)) {
+      foldRight3(a1, (Nil:List[C], reverse(a2))){ case (elem, (acc, balance)) =>
+        (Cons(f(elem, head(balance)), acc), tail(balance))
+      }._1
+    } else {
+      throw new IllegalArgumentException("Lists length not equal")
+    }
+  }
+
+  // 3.23 Generalize the function you just wrote so that it’s not specific to integers or addition.
+  //Name your generalized function zipWith
+
+  def zipWith[A, B, C](a1:List[A], a2:List[B])(f: (A, B) => C): List[C] = merge(a1,a2)(f)
+
 
   // for print
   implicit class PrintList[A](value: List[A]) {
@@ -212,17 +235,17 @@ object Exercise_3_1 extends CustomList {
   def main(args: Array[String]): Unit = {
     println("3.4")
     val list = List(1, 2, 3, 4, 5)
-    println(ExpressionForList.drop(list, 3))
-    println(ExpressionForList.drop(list, 7))
-    println(ExpressionForList.drop(Nil, 3))
-    println(ExpressionForList.drop(List(1), 1))
-    println(ExpressionForList.drop(List(1), 2))
+    println(drop(list, 3))
+    println(drop(list, 7))
+    println(drop(Nil, 3))
+    println(drop(List(1), 1))
+    println(drop(List(1), 2))
     println("3.5")
-    println(ExpressionForList.dropWhile(list, (x: Int) => x < 4))
-    println(ExpressionForList.dropWhile(list, (x: Int) => x < 40))
-    println(ExpressionForList.dropWhile(list, (x: Int) => x < 0))
+    println(dropWhile(list, (x: Int) => x < 4))
+    println(dropWhile(list, (x: Int) => x < 40))
+    println(dropWhile(list, (x: Int) => x < 0))
     println("3.6")
-    println(ExpressionForList.init(list))
+    println(init(list))
     println("3.8")
     println(List.foldRight(List(1, 2, 3), Nil: List[Int])(Cons(_, _)))
     println("3.9")
@@ -257,6 +280,8 @@ object Exercise_3_1 extends CustomList {
     println(flatMap(list)(i => List(i, i)).string)
     println("3.21")
     println(filter2(list)(_ % 2 == 0).string)
+    println("3.22")
+    println(merge(List(1,2,3), List(4,5,6))(_+_).string)
   }
 
 }
