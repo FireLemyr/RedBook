@@ -1,6 +1,6 @@
 package ru.firelemyr.red.book.hometasks.chapter3
 
-object Exercise_3_1_22 extends CustomList {
+object Exercise_3_custom_list extends CustomList {
 
   import List._
 
