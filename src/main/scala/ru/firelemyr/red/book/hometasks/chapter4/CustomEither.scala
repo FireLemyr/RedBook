@@ -8,12 +8,10 @@ trait CustomEither {
   sealed trait CEither[+E, +A] {
     self =>
     def map[B](f: A => B): CEither[E, B]
-
     def flatMap[EE >: E, B](f: A => CEither[EE, B]): CEither[EE, B]
-
     def orElse[EE >: E, B >: A](b: => CEither[EE, B]): CEither[EE, B]
-
     def map2[EE >: E, B, C](b: CEither[EE, B])(f: (A, B) => C): CEither[EE, C]
+
     //-------------------------------
     def left: Option[E] = {
       self match {
@@ -54,9 +52,9 @@ trait CustomEither {
     }
   }
 
-  def Try[A](a: => A): Either[Exception, A] =
-    try Right(a)
+  def Try[A](a: => A): CEither[Exception, A] =
+    try CRight(a)
     catch {
-      case e: Exception => Left(e)
+      case e: Exception => CLeft(e)
     }
 }
