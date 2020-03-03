@@ -1,6 +1,6 @@
 package ru.firelemyr.red.book.hometasks.chapter4
 
-object Exercise_4 extends CustomOption {
+object Exercise_4_option extends CustomOption {
 
   implicit class SeqCustomOption[T](value: Seq[T]) {
     def headCOption: COption[T] = if (value.isEmpty) CNone else CSome(value.head)
@@ -34,20 +34,20 @@ object Exercise_4 extends CustomOption {
   //with a list of all the values. Here is its signature:3
 
   def sequence[A](a: List[COption[A]]): COption[List[A]] = {
-
-    def mapToList(x: COption[A], y: COption[List[A]]) = {
-      x.flatMap(xGet => y.map(yGet => xGet +: yGet))
+    a.headCOption.flatMap { h =>
+      a.tail.foldLeft(h.map(e => List(e)))((acc, elem) => map2(acc, elem)((x, y) => x :+ y))
     }
+  }
 
-    def step(list: List[COption[A]]): COption[List[A]] = {
-      list match {
-        case h :: Nil => h.map(hGet => List(hGet))
-        case h :: t => mapToList(h, step(t))
-        case Nil => CNone
+  // 4.5 Implement this function. It’s straightforward to do using map and sequence, but try
+  //for a more efficient implementation that only looks at the list once. In fact, implement sequence in terms of traverse
+
+  def traverse[A, B](a: List[A])(f: A => COption[B]): COption[List[B]] = {
+    a.headCOption.flatMap { h =>
+      a.tail.foldLeft(f(h).map(e => List(e))) { (acc, elem) =>
+        map2(acc, f(elem))((x, y) => x :+ y)
       }
     }
-
-    step(a)
   }
 
   def main(args: Array[String]): Unit = {
@@ -59,10 +59,13 @@ object Exercise_4 extends CustomOption {
     println(map2(CNone, CSome(6))((x: Int, y: Int) => x + y))
     println(map2(CSome(5), CNone)((x: Int, y: Int) => x + y))
     println("4.4")
-    println(sequence(List(CSome(1),CSome(2),CSome(3))))
-    println(sequence(List(CSome(1),CNone,CSome(3))))
-    println(sequence(List(CSome(1),CSome(2),CNone)))
+    println(sequence(List(CSome(1), CSome(2), CSome(3))))
+    println(sequence(List(CSome(1), CNone, CSome(3))))
+    println(sequence(List(CSome(1), CSome(2), CNone)))
     println(sequence(List()))
+    println("4.5")
+    println(traverse(List("1", "2", "3"))(x => Try{x.toInt}))
+    println(traverse(List("1", "dd", "3"))(x => Try{x.toInt}))
   }
 
 }

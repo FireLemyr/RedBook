@@ -11,6 +11,10 @@ trait CustomOption {
 
   def lift[A,B](f: A => B): COption[A] => COption[B] = _ map f
 
+  def Try[A](a: => A): COption[A] =
+    try CSome(a)
+    catch { case e: Exception => CNone }
+
   //4.1 Implement all of the preceding functions on Option. As you implement each function,
   //try to think about what it means and in what situations you’d use it. We’ll explore when
   //to use each of these functions next. Here are a few hints for solving this exercise:
